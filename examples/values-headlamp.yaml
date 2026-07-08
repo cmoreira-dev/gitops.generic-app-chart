@@ -1,0 +1,85 @@
+# Exemplo ilustrativo: como o Headlamp ficaria se fosse deployado via este chart genérico,
+# usado aqui só para validar que o chart cobre um caso real (Deployment + Service + HTTPRoute
+# + ExternalSecret, com auth via OIDC nativo do app).
+#
+# IMPORTANTE: o Headlamp de produção (gitops.headlamp) continua usando o chart upstream
+# oficial (kubernetes-sigs/headlamp) para o Deployment — ele já resolve OIDC/RBAC de forma
+# própria. A parte deste exemplo que É reaproveitada de verdade na Fase 1 do piloto de
+# migração é só o HTTPRoute (substituindo VirtualService+Gateway do Istio); ver
+# docs/migration-istio-to-nginx-gateway-fabric.md.
+
+nameOverride: headlamp
+
+namespace:
+  create: false # namespace "headlamp" já existe, gerenciado pelo Application headlamp
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/headlamp-k8s/headlamp
+  tag: "0.30.0"
+  pullPolicy: IfNotPresent
+
+# Cluster tem control-plane x86 + workers ARM64. Imagem do Headlamp é multi-arch;
+# sem afinidade explícita ele pode cair em qualquer um. Fixando nos workers ARM64
+# para não competir com os addons pinados no control-plane (ex.: Istio hoje).
+nodeSelector:
+  kubernetes.io/arch: arm64
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+probes:
+  readiness:
+    enabled: true
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  liveness:
+    enabled: true
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 20
+
+service:
+  port: 80
+  targetPort: 4466 # porta real do container Headlamp
+
+httpRoute:
+  enabled: true
+  gateway:
+    name: nginx-gateway # nome do Gateway (Gateway API) a criar sobre o GatewayClass "nginx"
+    namespace: nginx-gateway
+  hostnames:
+    - headlamp.cmoreira.dev
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+# Headlamp resolve o próprio OIDC (Entra ID via Dex) — não é uma policy do Istio.
+# O ExternalSecret abaixo só recria o Secret que o chart upstream do Headlamp espera
+# (headlamp-oidc), agora criado por este chart em vez de um ExternalSecret solto.
+externalSecrets:
+  enabled: true
+  secretStoreRef:
+    name: aws-ssm
+    kind: ClusterSecretStore
+  secretName: headlamp-oidc
+  data:
+    - secretKey: client-id
+      remoteRef:
+        key: /homelab/headlamp/oidc-client-id
+    - secretKey: client-secret
+      remoteRef:
+        key: /homelab/headlamp/oidc-client-secret

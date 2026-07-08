@@ -1,0 +1,18 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: gitops-generic-app-chart
+  description: 'Generic reusable Helm chart for cmoreira-dev homelab apps (Deployment + Service + Gateway API HTTPRoute + ExternalSecret)'
+  tags:
+    - kubernetes
+    - homelab
+    - helm
+    - gateway-api
+  annotations:
+    github.com/project-slug: cmoreira-dev/gitops.generic-app-chart
+spec:
+  type: library
+  lifecycle: lab
+#  owner: platform-team
+#  system: homelab

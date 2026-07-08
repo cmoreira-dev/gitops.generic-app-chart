@@ -1,0 +1,26 @@
+{{ include "generic-app.fullname" . }} has been deployed to namespace {{ include "generic-app.namespace" . }}.
+
+Service:
+  {{ include "generic-app.fullname" . }}.{{ include "generic-app.namespace" . }}.svc.cluster.local:{{ .Values.service.port }}
+
+{{- if .Values.httpRoute.enabled }}
+
+Exposed via Gateway API HTTPRoute on gateway {{ .Values.httpRoute.gateway.namespace }}/{{ .Values.httpRoute.gateway.name }}:
+{{- range .Values.httpRoute.hostnames }}
+  http://{{ . }}
+{{- end }}
+
+Check propagation:
+  kubectl get httproute {{ include "generic-app.fullname" . }} -n {{ include "generic-app.namespace" . }} -o wide
+{{- else }}
+
+httpRoute.enabled is false — this app is not exposed outside the cluster.
+{{- end }}
+
+{{- if .Values.externalSecrets.enabled }}
+
+ExternalSecret {{ .Values.externalSecrets.secretName | default (include "generic-app.fullname" .) }} pulls from
+SecretStore/{{ .Values.externalSecrets.secretStoreRef.kind | default "ClusterSecretStore" }} "{{ .Values.externalSecrets.secretStoreRef.name }}".
+Verify sync status:
+  kubectl get externalsecret {{ .Values.externalSecrets.secretName | default (include "generic-app.fullname" .) }} -n {{ include "generic-app.namespace" . }}
+{{- end }}

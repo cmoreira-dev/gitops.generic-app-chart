@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": ["config:recommended"],
+
+  "enabledManagers": ["helmv3"],
+
+  "includePaths": ["charts/**"],
+
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard"
+}
