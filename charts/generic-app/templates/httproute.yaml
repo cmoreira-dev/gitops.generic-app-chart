@@ -8,7 +8,9 @@ metadata:
     {{- include "generic-app.labels" . | nindent 4 }}
 spec:
   parentRefs:
-    - name: {{ .Values.httpRoute.gateway.name }}
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.httpRoute.gateway.name }}
       namespace: {{ .Values.httpRoute.gateway.namespace }}
       {{- with .Values.httpRoute.gateway.sectionName }}
       sectionName: {{ . }}
@@ -28,8 +30,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       backendRefs:
-        - name: {{ $.Values.httpRoute.backendRef.name | default (include "generic-app.fullname" $) }}
+        - group: ""
+          kind: Service
+          name: {{ $.Values.httpRoute.backendRef.name | default (include "generic-app.fullname" $) }}
           port: {{ $.Values.httpRoute.backendRef.port | default $.Values.service.port }}
+          weight: 1
       {{- with .timeouts }}
       timeouts:
         {{- toYaml . | nindent 8 }}
