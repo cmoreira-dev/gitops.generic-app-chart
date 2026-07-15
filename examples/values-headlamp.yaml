@@ -10,8 +10,8 @@
 
 nameOverride: headlamp
 
-namespace:
-  create: false # namespace "headlamp" já existe, gerenciado pelo Application headlamp
+# Namespace "headlamp" é gerenciado pelo ArgoCD (CreateNamespace=true na Application);
+# o chart só direciona os recursos para ele via namespace.name (vazio = namespace do release).
 
 replicaCount: 1
 

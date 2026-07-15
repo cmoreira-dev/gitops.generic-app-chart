@@ -8,11 +8,7 @@
     "namespace": {
       "type": "object",
       "properties": {
-        "create": { "type": "boolean" },
-        "name": { "type": "string" },
-        "labels": { "type": "object" },
-        "annotations": { "type": "object" },
-        "istioInjection": { "type": "string", "enum": ["", "enabled", "disabled"] }
+        "name": { "type": "string" }
       }
     },
     "replicaCount": { "type": "integer", "minimum": 0 },
@@ -97,6 +93,37 @@
           }
         },
         "rules": { "type": "array" }
+      }
+    },
+    "configMap": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "name": { "type": "string" },
+        "annotations": { "type": "object" },
+        "data": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "injectAsEnv": { "type": "boolean" },
+        "mountPath": { "type": "string" }
+      }
+    },
+    "ecrPullSecret": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "name": { "type": "string" },
+        "refreshInterval": { "type": "string" },
+        "generatorRef": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "apiVersion": { "type": "string" },
+            "kind": { "type": "string" },
+            "name": { "type": "string" }
+          }
+        }
       }
     },
     "externalSecrets": {

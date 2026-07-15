@@ -2,11 +2,17 @@
 
 Chart Helm genérico e reutilizável para apps próprias do homelab, cobrindo:
 
-- `Namespace` (criação opcional)
 - `Deployment` (imagem, probes, recursos, node placement x86/ARM64, securityContext)
 - `Service`
 - `HTTPRoute` (Gateway API, alvo NGINX Gateway Fabric)
+- `ConfigMap` (config não-sensível, injetável como env vars via `injectAsEnv` e/ou montável como arquivos via `mountPath`; mudanças em `data` fazem rollout automático via annotation de checksum)
 - `ExternalSecret` (via `ClusterSecretStore`/`SecretStore` já existente no cluster)
+- `ExternalSecret` de pull de imagem ECR (`ecrPullSecret.enabled`): gera o Secret dockerconfigjson a partir do `ClusterGenerator/ecr-token` (gerenciado no `gitops.core-addons`) e o referencia automaticamente no `imagePullSecrets` do pod
+
+> **Namespace**: desde a 0.2.0 o chart **não** cria mais o Namespace (`namespace.create` foi
+> removido). O ciclo de vida do namespace é do ArgoCD, via
+> `syncOptions: [CreateNamespace=true]` na Application. `namespace.name` continua existindo
+> apenas para direcionar os recursos.
 
 ## Por que este repo existe fora do padrão `helm/<app>` de cada `gitops.*`
 

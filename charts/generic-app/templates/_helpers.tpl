@@ -53,6 +53,20 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+ConfigMap name to use
+*/}}
+{{- define "generic-app.configMapName" -}}
+{{- .Values.configMap.name | default (include "generic-app.fullname" .) }}
+{{- end }}
+
+{{/*
+ECR pull secret (ExternalSecret + generated Secret) name to use
+*/}}
+{{- define "generic-app.ecrPullSecretName" -}}
+{{- .Values.ecrPullSecret.name | default (printf "%s-ecr-pull" (include "generic-app.fullname" .)) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Service account name to use
 */}}
 {{- define "generic-app.serviceAccountName" -}}
