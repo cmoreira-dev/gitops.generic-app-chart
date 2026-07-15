@@ -7,18 +7,11 @@ nameOverride: ""
 # -- Overrides the full resource name (defaults to "<release-name>-<name>").
 fullnameOverride: ""
 
+# Namespace lifecycle is owned by ArgoCD (Application syncOptions: CreateNamespace=true) —
+# this chart no longer renders a Namespace object.
 namespace:
-  # -- Create the target namespace. Set to false if the namespace is managed elsewhere.
-  create: true
   # -- Namespace to deploy into. Defaults to the Helm release namespace when empty.
   name: ""
-  # -- Extra labels to set on the namespace.
-  labels: {}
-  # -- Extra annotations to set on the namespace.
-  annotations: {}
-  # -- Set to "enabled"/"disabled" to add the istio-injection label during the Istio -> NGINX
-  # Gateway Fabric transition. Leave empty to omit the label entirely.
-  istioInjection: ""
 
 replicaCount: 1
 
@@ -136,6 +129,35 @@ httpRoute:
             value: /
       filters: []
       timeouts: {}
+
+configMap:
+  # -- Create a ConfigMap with the data below.
+  enabled: false
+  # -- Name of the ConfigMap. Defaults to the fullname when empty.
+  name: ""
+  # -- Extra annotations to set on the ConfigMap.
+  annotations: {}
+  # -- Plain key/value pairs. Keys become env var names (with injectAsEnv) or file names (with mountPath).
+  data: {}
+  # -- Append this ConfigMap to the container's envFrom, exposing every key as an env var.
+  injectAsEnv: false
+  # -- If set, mount the ConfigMap at this path in the container (one file per key).
+  # Leave empty to skip mounting; wire it manually via volumes/volumeMounts for partial mounts.
+  mountPath: ""
+
+ecrPullSecret:
+  # -- Create an ExternalSecret that materializes a dockerconfigjson Secret from the
+  # ECR token ClusterGenerator (managed in gitops.core-addons) and reference it
+  # automatically in the pod's imagePullSecrets.
+  enabled: false
+  # -- Name of the ExternalSecret and generated Secret. Defaults to "<fullname>-ecr-pull".
+  name: ""
+  refreshInterval: 6h
+  # -- Generator that yields the ECR credentials (proxy_endpoint/username/password).
+  generatorRef:
+    apiVersion: generators.external-secrets.io/v1alpha1
+    kind: ClusterGenerator
+    name: ecr-token
 
 externalSecrets:
   # -- Create an ExternalSecret pulling from the shared ClusterSecretStore.

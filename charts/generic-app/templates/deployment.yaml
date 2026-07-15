@@ -19,9 +19,15 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.podAnnotations }}
+      {{- if or .Values.podAnnotations .Values.configMap.enabled }}
       annotations:
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.configMap.enabled }}
+        # Rolls the pods whenever the ConfigMap data changes.
+        checksum/config: {{ .Values.configMap.data | toYaml | sha256sum }}
+        {{- end }}
       {{- end }}
     spec:
       serviceAccountName: {{ include "generic-app.serviceAccountName" . }}
@@ -29,9 +35,14 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.imagePullSecrets }}
+      {{- if or .Values.imagePullSecrets .Values.ecrPullSecret.enabled }}
       imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.ecrPullSecret.enabled }}
+        - name: {{ include "generic-app.ecrPullSecretName" . }}
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -57,10 +68,15 @@ spec:
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if or .Values.envFrom .Values.externalSecrets.enabled }}
+          {{- $injectConfigMap := and .Values.configMap.enabled .Values.configMap.injectAsEnv }}
+          {{- if or .Values.envFrom .Values.externalSecrets.enabled $injectConfigMap }}
           envFrom:
             {{- with .Values.envFrom }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if $injectConfigMap }}
+            - configMapRef:
+                name: {{ include "generic-app.configMapName" . }}
             {{- end }}
             {{- if .Values.externalSecrets.enabled }}
             - secretRef:
@@ -87,13 +103,28 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
+          {{- $mountConfigMap := and .Values.configMap.enabled .Values.configMap.mountPath }}
+          {{- if or .Values.volumeMounts $mountConfigMap }}
           volumeMounts:
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if $mountConfigMap }}
+            - name: generic-app-config
+              mountPath: {{ .Values.configMap.mountPath }}
+              readOnly: true
+            {{- end }}
           {{- end }}
-      {{- with .Values.volumes }}
+      {{- if or .Values.volumes $mountConfigMap }}
       volumes:
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if $mountConfigMap }}
+        - name: generic-app-config
+          configMap:
+            name: {{ include "generic-app.configMapName" . }}
+        {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
