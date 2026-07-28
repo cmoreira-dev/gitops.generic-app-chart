@@ -37,13 +37,10 @@ spec:
       {{- end }}
       {{- if or .Values.imagePullSecrets .Values.ecrPullSecret.enabled }}
       imagePullSecrets:
-        {{- with .Values.imagePullSecrets }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- if .Values.ecrPullSecret.enabled }}
+              {{- with .Values.imagePullSecrets }}
+              {{- toYaml . | nindent 8 }}
+              {{- end }}
         - name: {{ include "generic-app.ecrPullSecretName" . }}
-        {{- end }}
-      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
