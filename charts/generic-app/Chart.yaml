@@ -4,7 +4,9 @@ description: Generic chart for cmoreira-dev homelab apps (Deployment + Service +
 type: application
 # 0.2.0: adds configMap + ecrPullSecret support and REMOVES namespace creation
 # (namespace lifecycle moved to the ArgoCD Application via CreateNamespace=true).
-version: 0.2.0
+# 0.2.1: fixes templates/externalsecret.yaml rendering unconditionally (no
+# `enabled` guard) — broke sync for any app without externalSecrets configured.
+version: 0.2.1
 appVersion: "1.0.0"
 keywords:
   - homelab
