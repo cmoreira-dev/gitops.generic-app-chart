@@ -35,8 +35,14 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- $imagePullSecrets := .Values.imagePullSecrets }}
+      {{- if .Values.ecrPullSecret.enabled }}
+      {{- $imagePullSecrets = append $imagePullSecrets (dict "name" (include "generic-app.ecrPullSecretName" .)) }}
+      {{- end }}
+      {{- if $imagePullSecrets }}
       imagePullSecrets:
-        - name: {{ printf "%s-ecr-pull" (include "generic-app.fullname" .) }}
+        {{- toYaml $imagePullSecrets | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

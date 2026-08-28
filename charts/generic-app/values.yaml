@@ -22,6 +22,9 @@ image:
   tag: ""
   pullPolicy: IfNotPresent
 
+# -- Extra image pull secrets (LocalObjectReference format: [{name: <secret>}]).
+# Merged with the ecrPullSecret-generated secret below when that's enabled — this list is
+# for additional secrets, not a replacement for it.
 imagePullSecrets: []
 
 serviceAccount:
@@ -148,8 +151,10 @@ configMap:
 ecrPullSecret:
   # -- Create an ExternalSecret that materializes a dockerconfigjson Secret from the
   # ECR token ClusterGenerator (managed in gitops.core-addons) and reference it
-  # automatically in the pod's imagePullSecrets.
-  enabled: false
+  # automatically in the pod's imagePullSecrets. Defaults to true because every
+  # homelab app pulls its image from a private ECR repo — set to false explicitly
+  # for the rare app that doesn't need it.
+  enabled: true
   # -- Name of the ExternalSecret and generated Secret. Defaults to "<fullname>-ecr-pull".
   name: ""
   refreshInterval: 6h

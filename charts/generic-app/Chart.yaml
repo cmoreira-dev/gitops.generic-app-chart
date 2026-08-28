@@ -6,7 +6,12 @@ type: application
 # (namespace lifecycle moved to the ArgoCD Application via CreateNamespace=true).
 # 0.2.1: fixes templates/externalsecret.yaml rendering unconditionally (no
 # `enabled` guard) — broke sync for any app without externalSecrets configured.
-version: 0.2.1
+# 0.2.2: same class of bug in ecrPullSecret — the ExternalSecret and the pod's
+# imagePullSecrets referenced it unconditionally, ignoring `ecrPullSecret.enabled`
+# and the `imagePullSecrets` value entirely. Both are now gated by the flag, which
+# defaults to true (every homelab app pulls from a private ECR repo); extra
+# `imagePullSecrets` entries now merge in instead of being ignored.
+version: 0.2.2
 appVersion: "1.0.0"
 keywords:
   - homelab
