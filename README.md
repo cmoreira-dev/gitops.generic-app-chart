@@ -14,6 +14,14 @@ Chart Helm genérico e reutilizável para apps próprias do homelab, cobrindo:
 > `syncOptions: [CreateNamespace=true]` na Application. `namespace.name` continua existindo
 > apenas para direcionar os recursos.
 
+> **securityContext (desde 0.4.0)**: `podSecurityContext` e `securityContext` agora têm
+> default compatível com o PodSecurity `restricted` (`runAsNonRoot`, `seccompProfile:
+> RuntimeDefault`, `allowPrivilegeEscalation: false`, `drop: [ALL]`). A imagem tem de correr
+> como utilizador não-root (linha `USER` no Dockerfile) e escutar numa porta > 1024. As APIs
+> FastAPI (`api.ia.*`) já cumprem; as UIs Next.js (`ui.ia.*`) ainda correm como root na `:80`
+> — enquanto a imagem não for corrigida, essas têm de repor `podSecurityContext: {}` e
+> `securityContext: {}` no seu `values.yaml`.
+
 ## Por que este repo existe fora do padrão `helm/<app>` de cada `gitops.*`
 
 Os demais repos `gitops.*` são *wrapper charts* em torno de um chart upstream (ex.:

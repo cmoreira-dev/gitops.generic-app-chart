@@ -15,7 +15,12 @@ type: application
 # (target.deletionPolicy + remoteRef.{conversionStrategy,decodingStrategy,
 # metadataPolicy}) so ArgoCD stops reporting permanent drift. New value
 # externalSecrets.deletionPolicy (default Retain). No functional change.
-version: 0.3.0
+# 0.4.0: podSecurityContext / securityContext now DEFAULT to a PodSecurity
+# `restricted`-compliant set (runAsNonRoot, seccompProfile RuntimeDefault,
+# allowPrivilegeEscalation false, drop ALL caps). BREAKING for images that run
+# as root or bind a privileged port — those must override both back to `{}` and
+# fix the Dockerfile first. Non-root images (the FastAPI APIs) adopt cleanly.
+version: 0.4.0
 appVersion: "1.0.0"
 keywords:
   - homelab

@@ -37,11 +37,24 @@ serviceAccount:
 podLabels: {}
 podAnnotations: {}
 
-# -- Pod-level securityContext (fsGroup, runAsNonRoot, seccompProfile, etc.).
-podSecurityContext: {}
+# -- Pod-level securityContext. Defaults to the minimal set that satisfies the
+# PodSecurity `restricted` profile. The container image MUST run as a non-root
+# user (a `USER` line in the Dockerfile) and listen on a port >1024 — images
+# that still run as root or bind a privileged port (e.g. a Next.js server on :80)
+# must override this back to `{}` and fix the image before adopting.
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
 
-# -- Container-level securityContext (capabilities, readOnlyRootFilesystem, etc.).
-securityContext: {}
+# -- Container-level securityContext. Also defaults to a `restricted`-compliant
+# set. Override per-app for anything that needs extra capabilities or a writable
+# root filesystem.
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
 
 command: []
 args: []
