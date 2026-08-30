@@ -11,7 +11,11 @@ type: application
 # and the `imagePullSecrets` value entirely. Both are now gated by the flag, which
 # defaults to true (every homelab app pulls from a private ECR repo); extra
 # `imagePullSecrets` entries now merge in instead of being ignored.
-version: 0.2.2
+# 0.3.0: templates/externalsecret.yaml now pins the fields ESO's webhook defaults
+# (target.deletionPolicy + remoteRef.{conversionStrategy,decodingStrategy,
+# metadataPolicy}) so ArgoCD stops reporting permanent drift. New value
+# externalSecrets.deletionPolicy (default Retain). No functional change.
+version: 0.3.0
 appVersion: "1.0.0"
 keywords:
   - homelab
