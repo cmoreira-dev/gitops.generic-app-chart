@@ -59,6 +59,7 @@
     "tolerations": { "type": "array" },
     "affinity": { "type": "object" },
     "runtimeClassName": { "type": "string" },
+    "strategy": { "type": "object" },
     "service": {
       "type": "object",
       "required": ["port", "targetPort"],
