@@ -21,8 +21,11 @@ type: application
 # as root or bind a privileged port — those must override both back to `{}` and
 # fix the Dockerfile first. Non-root images (the FastAPI APIs) adopt cleanly.
 # 0.5.0: new value `runtimeClassName` (default "") — pod-level runtime class,
+# 0.6.0: new value `strategy` (default {}) — Deployment update strategy. GPU /
+#   single-slot workloads need `{"type":"Recreate"}` (RollingUpdate surges a pod
+#   that cannot schedule). Purely additive.
 # needed for GPU workloads (`nvidia` on this cluster). Purely additive.
-version: 0.5.0
+version: 0.6.0
 appVersion: "1.0.0"
 keywords:
   - homelab

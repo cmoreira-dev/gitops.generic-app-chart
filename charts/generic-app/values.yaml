@@ -116,6 +116,12 @@ affinity: {}
 # em runc normal e o NVML falha com ERROR_LIBRARY_NOT_FOUND. Vazio = default.
 runtimeClassName: ""
 
+# -- Deployment update `strategy`. Vazio = default do Kubernetes (RollingUpdate
+# 25%/25%). Workloads single-instance com um recurso escasso (ex. 1 slot de GPU)
+# devem usar `{"type": "Recreate"}` — senão o rolling update cria um pod extra
+# que não consegue agendar e o rollout fica preso.
+strategy: {}
+
 service:
   type: ClusterIP
   # -- Port the Service listens on.
