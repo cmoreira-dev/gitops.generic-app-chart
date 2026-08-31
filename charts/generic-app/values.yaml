@@ -111,6 +111,11 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# -- Pod `runtimeClassName`. Homelab uses "nvidia" for GPU workloads (registado
+# pela extensão nvidia-container-toolkit do Talos) — sem isto o container corre
+# em runc normal e o NVML falha com ERROR_LIBRARY_NOT_FOUND. Vazio = default.
+runtimeClassName: ""
+
 service:
   type: ClusterIP
   # -- Port the Service listens on.
