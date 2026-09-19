@@ -13,6 +13,6 @@ metadata:
     github.com/project-slug: cmoreira-dev/gitops.generic-app-chart
 spec:
   type: library
-  lifecycle: lab
-#  owner: platform-team
-#  system: homelab
+  lifecycle: production
+  owner: platform-team
+  system: homelab-platform
