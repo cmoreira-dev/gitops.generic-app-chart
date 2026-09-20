@@ -1,0 +1,9 @@
+site_name: 'gitops.generic-app-chart'
+site_description: 'Generic reusable Helm chart for cmoreira-dev homelab apps'
+
+nav:
+  - Home: index.md
+  - Chart reference: chart-reference.md
+
+plugins:
+  - techdocs-core
