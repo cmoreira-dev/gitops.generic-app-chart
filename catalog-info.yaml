@@ -11,6 +11,7 @@ metadata:
     - gateway-api
   annotations:
     github.com/project-slug: cmoreira-dev/gitops.generic-app-chart
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: library
   lifecycle: production
