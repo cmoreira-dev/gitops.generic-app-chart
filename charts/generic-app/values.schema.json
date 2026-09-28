@@ -36,6 +36,7 @@
     "securityContext": { "type": "object" },
     "command": { "type": "array" },
     "args": { "type": "array" },
+    "initContainers": { "type": "array" },
     "env": { "type": "array" },
     "envFrom": { "type": "array" },
     "probes": {
