@@ -59,6 +59,10 @@ securityContext:
 command: []
 args: []
 
+# -- Optional init containers. They inherit the pod security context, while
+# each container must provide its own image and may override securityContext.
+initContainers: []
+
 # -- Extra env vars, Kubernetes EnvVar format: [{name, value} | {name, valueFrom}].
 env: []
 

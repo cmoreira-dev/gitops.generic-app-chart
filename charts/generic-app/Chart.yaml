@@ -28,7 +28,8 @@ type: application
 #   single-slot workloads need `{"type":"Recreate"}` (RollingUpdate surges a pod
 #   that cannot schedule). Purely additive.
 # needed for GPU workloads (`nvidia` on this cluster). Purely additive.
-version: 0.7.0
+# 0.8.0: optional initContainers, rendered with the pod's shared settings.
+version: 0.8.0
 appVersion: "1.0.0"
 keywords:
   - homelab
